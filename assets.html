@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Monedge Assets</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+
+    <link rel="apple-touch-icon"
+        href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+    <link rel="icon"
+        href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <!-- Material Symbols -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific Styles for Assets */
+        .asset-group {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .asset-group-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .account-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .account-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .account-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .account-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            background: #f1f3f5;
+            color: #666;
+        }
+
+        .balance-input-container {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 4px 8px;
+            width: 140px;
+        }
+
+        .balance-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: right;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            color: var(--text-main);
+        }
+
+        .currency-symbol {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            margin-right: 4px;
+        }
+
+        /* Add Account Modal */
+        .modal-form-group {
+            margin-bottom: 16px;
+        }
+
+        .modal-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background: white;
+            /* Fix padding issue */
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .tag-suggestion {
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body style="display: flex; flex-direction: column;">
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div style="font-size: 1.25rem; font-weight: 700;">資産管理</div>
+        </div>
+    </header>
+
+    <main style="padding-bottom: 100px; flex: 1; overflow-y: auto;">
+        <!-- Date Selector -->
+        <div
+            style="background:white; padding:16px; border-radius:16px; margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:12px; box-shadow:var(--shadow);">
+            <button id="prev-day" class="icon-btn"
+                style="border:none; background:none; font-size:1.2rem; cursor:pointer;"><ion-icon
+                    name="chevron-back-outline"></ion-icon></button>
+            <input type="date" id="snapshot-date"
+                style="font-size:1rem; border:none; font-weight:700; background:transparent; font-family:inherit;">
+            <button id="next-day" class="icon-btn"
+                style="border:none; background:none; font-size:1.2rem; cursor:pointer;"><ion-icon
+                    name="chevron-forward-outline"></ion-icon></button>
+        </div>
+
+        <!-- Total Asset Display -->
+        <div style="text-align:center; margin-bottom:24px;">
+            <div style="font-size:0.85rem; color:#888; font-weight:600;">純資産総額</div>
+            <div id="total-assets-amount" style="font-size:2.2rem; font-weight:800; color:var(--text-main);">
+                ---
+            </div>
+        </div>
+
+        <div id="assets-list-container" style="min-height: 100px;">
+            <!-- Render Groups Here -->
+            <div class="loading" style="text-align:center; padding:20px; color:#888;">
+                <ion-icon name="sync-outline" class="spin"></ion-icon> Loading accounts...
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <button id="add-account-btn"
+                style="background:transparent; border:2px dashed #ddd; color:#888; padding:12px 24px; border-radius:8px; font-weight:600; width:100%;">
+                <ion-icon name="add-circle-outline" style="vertical-align:middle;"></ion-icon> 口座を追加
+            </button>
+        </div>
+
+        <button class="primary-btn" id="update-all-btn"
+            style="width:100%; margin-top:20px; font-size:1rem; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <ion-icon name="save-outline"></ion-icon> 一括更新
+        </button>
+
+    </main>
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin:0; font-size:1.1rem;">口座を追加</h3>
+                <button id="close-add-modal"><ion-icon name="close-outline"></ion-icon></button>
+            </div>
+
+            <div class="input-form" style="padding:20px;">
+                <div class="modal-form-group">
+                    <label class="modal-label">詳細 (名前)</label>
+                    <input type="text" id="new-acc-name" class="modal-input" placeholder="例: A銀行、B証券">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">種別</label>
+                    <div class="type-selector" id="asset-type-selector">
+                        <button type="button" class="type-btn active" data-type="Asset"
+                            style="padding:12px; font-size:1rem;">資産</button>
+                        <button type="button" class="type-btn" data-type="Liability"
+                            style="padding:12px; font-size:1rem;">負債</button>
+                    </div>
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">カテゴリ</label>
+                    <div id="asset-category-list" class="category-list"
+                        style="display:flex; flex-wrap:wrap; gap:8px; min-height:40px;">
+                        <!-- JS will populate -->
+                    </div>
+                    <!-- Store selected category ID/Name -->
+                    <input type="hidden" id="new-acc-category-val">
+                </div>
+
+                <div class="modal-form-group">
+                    <label class="modal-label">名義人</label>
+                    <input type="text" id="new-acc-holder" class="modal-input" placeholder="例: 自分、配偶者、共通">
+                    <div style="font-size:0.8rem; color:#888; margin-top:4px;">
+                        <span class="tag-suggestion"
+                            onclick="document.getElementById('new-acc-holder').value='自分'">自分</span>
+                        <span class="tag-suggestion"
+                            onclick="document.getElementById('new-acc-holder').value='配偶者'">配偶者</span>
+                        <span class="tag-suggestion"
+                            onclick="document.getElementById('new-acc-holder').value='子供'">子供</span>
+                        <span class="tag-suggestion"
+                            onclick="document.getElementById('new-acc-holder').value='その他'">その他</span>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top:20px;">
+                    <button class="btn-primary" id="save-new-account" style="width:100%;">追加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <button id="menu-btn" class="fab secondary"><ion-icon name="menu-outline"></ion-icon></button>
+        <button id="home-fab" class="fab"><ion-icon name="home-outline"></ion-icon></button>
+    </div>
+
+    <!-- Side Menu -->
+    <div id="menu-overlay" class="menu-overlay hidden"></div>
+    <div id="side-menu" class="side-menu hidden">
+        <div class="menu-header">
+            <h3 class="menu-title">メニュー</h3>
+            <button id="close-menu"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="menu-items">
+            <button id="nav-statistics" class="menu-item">
+                <ion-icon name="bar-chart-outline"></ion-icon> 統計・分析
+            </button>
+            <button id="nav-archive" class="menu-item">
+                <ion-icon name="file-tray-full-outline"></ion-icon> アーカイブ管理
+            </button>
+        </div>
+    </div>
+
+    <script src="assets.js"></script>
+</body>
+
+</html>

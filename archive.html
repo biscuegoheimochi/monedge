@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Monedge Archive</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="apple-touch-icon"
+        href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+    <link rel="icon"
+        href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Archive Specific Styles */
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .archive-container {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .archive-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        p.desc {
+            color: var(--text-sub);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .status-message {
+            min-height: 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-message.success {
+            color: #2ecc71;
+        }
+
+        .status-message.info {
+            color: var(--text-sub);
+        }
+
+        .status-message.error {
+            color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-sub);
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="archive-container">
+        <div>
+            <div class="archive-icon">
+                <ion-icon name="file-tray-full-outline"></ion-icon>
+            </div>
+            <h1>アーカイブ管理</h1>
+        </div>
+
+        <p class="desc">
+            1年以上前の古い明細データを<br>
+            「Archives」シートに移動・集計します。<br>
+            メインの明細一覧からは削除されます。
+        </p>
+
+        <div id="status-message" class="status-message"></div>
+
+        <button id="exec-archive-btn" class="btn-primary">過去データをアーカイブ</button>
+    </div>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <button id="menu-btn" class="fab secondary"><ion-icon name="menu-outline"></ion-icon></button>
+        <button id="home-fab" class="fab"><ion-icon name="home-outline"></ion-icon></button>
+    </div>
+
+    <!-- Side Menu -->
+    <div id="menu-overlay" class="menu-overlay hidden"></div>
+    <div id="side-menu" class="side-menu hidden">
+        <div class="menu-header">
+            <h3 class="menu-title">メニュー</h3>
+            <button id="close-menu"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="menu-items">
+            <button id="nav-assets" class="menu-item">
+                <ion-icon name="wallet-outline"></ion-icon> 資産管理
+            </button>
+            <button id="nav-statistics" class="menu-item">
+                <ion-icon name="bar-chart-outline"></ion-icon> 統計・分析
+            </button>
+        </div>
+    </div>
+
+    <script src="archive.js"></script>
+
+</body>
+
+</html>

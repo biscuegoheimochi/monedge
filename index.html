@@ -1,17 +1,168 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Monedge</title>
-    <link rel="apple-touch-icon" href="hedgehog_icon_transparent.png">
-    <link rel="icon" href="hedgehog_icon_transparent.png">
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Monedge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Monedge">
+
+  <link rel="apple-touch-icon"
+    href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+  <link rel="icon"
+    href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- Ionicons -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
+
 <body>
-    <iframe src="https://script.google.com/macros/s/AKfycbxsJTMj5puTyxbTecXXu9jx0KgeAn2jkktObcSMJunbEtZ4-GYeQKLZGU1KMF2qxpbS/exec"></iframe>
+  <div id="app">
+    <!-- Header -->
+    <header>
+      <div class="month-selector">
+        <button id="prev-month"><ion-icon name="chevron-back-outline"></ion-icon></button>
+        <span id="current-month-display">2026年1月</span>
+        <button id="next-month"><ion-icon name="chevron-forward-outline"></ion-icon></button>
+      </div>
+      <div class="summary-card">
+        <div class="summary-item">
+          <span class="label">収入</span>
+          <span class="value income">¥0</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">支出</span>
+          <span class="value expense">¥0</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">収支</span>
+          <span class="value balance">¥0</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <div id="transaction-list" class="transaction-list">
+        <div class="loading" style="text-align:center; padding:20px; color:#888;">Loading...</div>
+      </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="fab-container">
+      <button id="menu-btn" class="fab secondary"><ion-icon name="menu-outline"></ion-icon></button>
+      <button id="add-btn" class="fab"><ion-icon name="add-outline"></ion-icon></button>
+    </div>
+
+    <!-- Side Menu -->
+    <div id="menu-overlay" class="menu-overlay hidden"></div>
+    <div id="side-menu" class="side-menu hidden">
+      <div class="menu-header">
+        <h3 class="menu-title">メニュー</h3>
+        <button id="close-menu"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="menu-items">
+        <button id="nav-assets" class="menu-item">
+          <ion-icon name="wallet-outline"></ion-icon> 資産管理
+        </button>
+        <button id="nav-statistics" class="menu-item">
+          <ion-icon name="bar-chart-outline"></ion-icon> 統計・分析
+        </button>
+        <button id="nav-archive" class="menu-item">
+          <ion-icon name="file-tray-full-outline"></ion-icon> アーカイブ管理
+        </button>
+      </div>
+    </div>
+
+    <!-- Input Modal -->
+    <div id="input-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div style="width: 24px;"></div> <!-- Spacer -->
+          <div class="type-selector">
+            <button class="type-btn active" data-type="Expense">支出</button>
+            <button class="type-btn" data-type="Income">収入</button>
+          </div>
+          <button id="close-modal"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="amount-display">
+          ¥<span id="amount-value">0</span>
+        </div>
+
+        <div class="input-form">
+          <div class="form-group" style="padding-left:10px;">
+            <input type="date" id="input-date">
+          </div>
+
+          <div class="form-group" id="group-category">
+            <div id="category-selector">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="form-group" id="group-note">
+            <input type="text" id="input-note" placeholder="メモ (任意)">
+          </div>
+        </div>
+
+        <!-- Calculator Keypad -->
+        <div class="calculator">
+          <div class="calc-row">
+            <button class="calc-btn" data-val="7">7</button>
+            <button class="calc-btn" data-val="8">8</button>
+            <button class="calc-btn" data-val="9">9</button>
+            <button class="calc-btn op" data-val="back"><ion-icon name="backspace-outline"></ion-icon></button>
+          </div>
+          <div class="calc-row">
+            <button class="calc-btn" data-val="4">4</button>
+            <button class="calc-btn" data-val="5">5</button>
+            <button class="calc-btn" data-val="6">6</button>
+            <!-- Mode Switch Buttons in place of clear/submit? No, extra rows -->
+            <!-- Reuse layout from user request or keep standard? 
+                  Previous user request: "Replace decimal with Save, Save with Continuous" 
+                  Let's match that layout logic -->
+            <button class="calc-btn op" data-val="clear">C</button>
+          </div>
+          <div class="calc-row">
+            <button class="calc-btn" data-val="1">1</button>
+            <button class="calc-btn" data-val="2">2</button>
+            <button class="calc-btn" data-val="3">3</button>
+
+            <!-- Dynamic Button Area: Submit or Continuous -->
+            <!-- Default: Save (Submit) -->
+            <!-- Edit Mode: Update (Submit) -->
+            <button class="calc-btn submit" id="save-btn" data-val="save">保存</button>
+          </div>
+          <div class="calc-row">
+            <button class="calc-btn zero" data-val="0">0</button>
+            <button class="calc-btn zero" data-val="00">00</button>
+
+            <!-- Toggle Button for modes -->
+            <button class="calc-btn action" id="btn-mode-continuous" data-val="queue" style="font-size:0.9rem;">
+              <ion-icon name="layers-outline" style="margin-right:4px;"></ion-icon> 連続
+            </button>
+            <button class="calc-btn op hidden" id="btn-mode-delete"
+              style="font-size:0.9rem; color:red; background:#fff5f5;">
+              <ion-icon name="trash-outline" style="margin-right:4px;"></ion-icon> 削除
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
+
 </html>

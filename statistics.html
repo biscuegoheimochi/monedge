@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Monedge Statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link rel="apple-touch-icon"
+        href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+    <link rel="icon"
+        href="https://raw.githubusercontent.com/biscuegoheimochi/monedge/4305fbd7628ce0edb9168160df164212137cfba0/hedgehog_icon_transparent.png">
+
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Material Symbols -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .stats-container {
+            padding: 24px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stats-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .tab-container {
+            display: flex;
+            background: #f1f3f5;
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            position: relative;
+            height: 300px;
+            /* Fixed height for chart */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container.hidden {
+            display: none;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .month-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Added Button Styles */
+        .primary-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Override global body overflow for scrolling */
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stats-container">
+        <div class="stats-header">
+            <div
+                style="background:rgba(67, 97, 238, 0.1); padding:10px; border-radius:12px; color:var(--primary-color);">
+                <ion-icon name="pie-chart" style="font-size:24px;"></ion-icon>
+            </div>
+            <div class="stats-title">統計</div>
+        </div>
+
+        <div class="month-selector">
+            <button class="month-btn" id="prev-month"><ion-icon name="chevron-back"></ion-icon></button>
+            <span id="current-month-display">--年--月</span>
+            <button class="month-btn" id="next-month"><ion-icon name="chevron-forward"></ion-icon></button>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" data-tab="breakdown">内訳</button>
+            <button class="tab-btn" data-tab="trends">推移</button>
+        </div>
+
+        <!-- Breakdown View -->
+        <div id="view-breakdown">
+            <div class="chart-container" style="position: relative;">
+                <canvas id="breakdownChart"></canvas>
+                <div id="chart-center-text"
+                    style="position: absolute; top: 36%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <div style="font-size: 0.8rem; color: var(--text-sub);">支出合計</div>
+                    <div id="breakdown-total" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">¥0
+                    </div>
+                </div>
+            </div>
+            <!-- Future: List of breakdown details could go here -->
+        </div>
+
+        <!-- Trends View -->
+        <div id="view-trends" class="tab-content hidden">
+            <div class="chart-container" style="height:350px;">
+                <canvas id="trends-chart"></canvas>
+            </div>
+
+            <!-- Filter UI -->
+            <div id="trends-filter-container">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Asset Trends -->
+            <h3 style="margin: 30px 0 10px; padding-left:10px; border-left:4px solid var(--primary-color);">資産推移</h3>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <button class="primary-btn active" id="btn-asset-group-type"
+                    style="padding:4px 12px; font-size:0.9rem;">種別ごと</button>
+                <button class="primary-btn" id="btn-asset-group-holder"
+                    style="background:#ddd; color:#666; padding:4px 12px; font-size:0.9rem;">名義人ごと</button>
+            </div>
+            <div class="chart-container" style="height:350px;">
+                <canvas id="asset-trends-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- Floating Action Buttons -->
+        <div class="fab-container">
+            <button id="menu-btn" class="fab secondary"><ion-icon name="menu-outline"></ion-icon></button>
+            <button id="home-fab" class="fab"><ion-icon name="home-outline"></ion-icon></button>
+        </div>
+
+        <!-- Side Menu -->
+        <div id="menu-overlay" class="menu-overlay hidden"></div>
+        <div id="side-menu" class="side-menu hidden">
+            <div class="menu-header">
+                <h3 class="menu-title">メニュー</h3>
+                <button id="close-menu"><ion-icon name="close-outline"></ion-icon></button>
+            </div>
+            <div class="menu-items">
+                <button id="nav-assets" class="menu-item">
+                    <ion-icon name="wallet-outline"></ion-icon> 資産管理
+                </button>
+                <button id="nav-archive" class="menu-item">
+                    <ion-icon name="file-tray-full-outline"></ion-icon> アーカイブ管理
+                </button>
+            </div>
+        </div>
+
+        <script src="statistics.js"></script>
+</body>
+
+</html>
