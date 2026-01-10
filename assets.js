@@ -5,7 +5,7 @@
 
 // Configuration (Must match what is in script.js or be passed in)
 // Ideally, reuse the same configuration method. For now, we define it here too or assume global.
-const API_URL = "YOUR_GAS_DEPLOY_URL"; // TO BE REPLACED
+const API_URL = "https://script.google.com/macros/s/AKfycbx7NUviiiV8PFw2jJoeVHhcikCay2TV_QFcqOxWNKEZPI7el4h1UFySs7gsv46YOgp_SA/exec"; // TO BE REPLACED
 
 // State
 let accounts = [];
@@ -461,3 +461,4 @@ function renderCategoryPills(type) {
         container.appendChild(pill);
     });
 }
+
