@@ -52,7 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const addBtn = document.getElementById('add-account-btn');
         if (addBtn) {
-            addBtn.addEventListener('click', () => {
+            addBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Prevent bubbling
+                document.getElementById('history-modal').classList.add('hidden'); // Ensure history is closed
                 document.getElementById('add-account-modal').classList.remove('hidden');
                 // Reset or init selection
                 renderCategoryPills(currentAssetType);
@@ -488,6 +491,7 @@ function openHistoryModal(account) {
     document.getElementById('history-account-name').textContent = account.name;
     document.getElementById('history-account-type').textContent = account.type + ' / ' + account.holder;
 
+    document.getElementById('add-account-modal').classList.add('hidden'); // Ensure add modal is closed
     document.getElementById('history-modal').classList.remove('hidden');
     loadAssetHistory(account.id);
 }
