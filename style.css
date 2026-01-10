@@ -683,3 +683,16 @@ main {
     cursor: pointer;
 }
 
+
+/* Account Row Interactions */
+.account-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    padding: 12px 8px; /* Add padding for hover effect */
+    border-radius: 8px; /* Round corners for hover state */
+}
+
+.account-row:hover {
+    background-color: #f0f0f5;
+}
+
