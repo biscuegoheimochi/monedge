@@ -1,7 +1,7 @@
 
 // --- Configuration ---
 // TO BE REPLACED WITH YOUR DEPLOYED WEB APP URL
-const API_URL = "YOUR_GAS_DEPLOY_URL"; // Example: "https://script.google.com/macros/s/xxx/exec"
+const API_URL = "https://script.google.com/macros/s/AKfycbx7NUviiiV8PFw2jJoeVHhcikCay2TV_QFcqOxWNKEZPI7el4h1UFySs7gsv46YOgp_SA/exec"; // Example: "https://script.google.com/macros/s/xxx/exec"
 
 /* 
 * Client-Side Logic
@@ -706,3 +706,4 @@ function deleteTransaction() {
             }
         });
 }
+
