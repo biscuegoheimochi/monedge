@@ -394,8 +394,49 @@ function renderTransactions() {
         return;
     }
 
-    // Sort by date desc
-    transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Sort by date desc -> Category Order -> SubCategory Order
+    transactions.sort((a, b) => {
+        // 1. Date (Desc)
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        if (dateA.getTime() !== dateB.getTime()) return dateB - dateA;
+
+        // 2. Category Index (Asc)
+        // Find index in categories list (which is sorted by definition/loading)
+        const idxA = categories.findIndex(c => c.name === a.category);
+        const idxB = categories.findIndex(c => c.name === b.category);
+
+        // Handle unknown categories (put at end)
+        const realIdxA = idxA === -1 ? 9999 : idxA;
+        const realIdxB = idxB === -1 ? 9999 : idxB;
+
+        if (realIdxA !== realIdxB) return realIdxA - realIdxB;
+
+        // 3. SubCategory (Asc) - if needed, though category list usually groups them.
+        // If the 'categories' list is flat and contains subcategories immediately after parents,
+        // comparing the index of the *SubCategory* might be more accurate if 'a.category' is just the major name.
+        // However, transaction objects usually store 'category' (Major) and 'subCategory' (Minor).
+        // Let's refine:
+        // If a and b have same major category, we might want to check subcategory index.
+
+        // Actually, if 'categories' list has {name:'Major'}, {name:'Sub', parent:'Major'}...
+        // We need to find the specific entry for the subcategory to sort correctly?
+        // But 'a.category' is the Major name. 'a.subCategory' is the Minor name.
+
+        // Let's rely on string comparison for subCategory if Major is same, OR try to find subcategory index?
+        // Given MOCK_CATEGORIES structure, subcategories follow parents.
+        // Let's try to find the index of the subCategory item itself if it exists.
+
+        const subIdxA = categories.findIndex(c => c.name === a.subCategory && c.parent === a.category);
+        const subIdxB = categories.findIndex(c => c.name === b.subCategory && c.parent === b.category);
+
+        const realSubIdxA = subIdxA === -1 ? 9999 : subIdxA;
+        const realSubIdxB = subIdxB === -1 ? 9999 : subIdxB;
+
+        if (realSubIdxA !== realSubIdxB) return realSubIdxA - realSubIdxB;
+
+        return 0;
+    });
 
     transactions.forEach(t => {
         const item = document.createElement('div');
