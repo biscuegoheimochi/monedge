@@ -2,7 +2,7 @@
 // -- Archive Logic --
 
 // Configuration
-const API_URL = "https://script.google.com/macros/s/AKfycbx7NUviiiV8PFw2jJoeVHhcikCay2TV_QFcqOxWNKEZPI7el4h1UFySs7gsv46YOgp_SA/exec"; // TO BE REPLACED
+const API_URL = "https://script.google.com/macros/s/AKfycbz9swpCcYyiAeOUT6uRudRHAoJXaVjf6FwoIRzsfDg644pY84H5Lxmh0RkPdDy89m8JPw/exec"; // TO BE REPLACED
 
 // Helper API
 async function callApi(action, payload = {}) {
@@ -122,4 +122,5 @@ function executeArchive() {
             statusEl.classList.add('error');
         });
 }
+
 
