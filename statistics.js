@@ -2,7 +2,7 @@
 // -- Statistics Logic --
 
 // Configuration
-const API_URL = "YOUR_GAS_DEPLOY_URL"; // TO BE REPLACED
+const API_URL = "https://script.google.com/macros/s/AKfycbx7NUviiiV8PFw2jJoeVHhcikCay2TV_QFcqOxWNKEZPI7el4h1UFySs7gsv46YOgp_SA/exec"; // TO BE REPLACED
 
 // State
 let currentStatsMonth = new Date();
@@ -734,3 +734,4 @@ function renderAssetTrendsChart() {
         }
     });
 }
+
