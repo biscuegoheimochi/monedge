@@ -205,6 +205,31 @@ function setupHandlers() {
             }
         });
     }
+
+    // Keyboard support for PC
+    document.addEventListener('keydown', (e) => {
+        // Only trigger if modal is open via class check
+        const modal = document.getElementById('input-modal');
+        if (modal.classList.contains('hidden')) return;
+
+        // Ignore if user is typing in Date or Note inputs
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        const key = e.key;
+        if (/[0-9]/.test(key)) {
+            handleCalcInput(key);
+        } else if (key === 'Backspace') {
+            handleCalcInput('back');
+        } else if (key === 'Enter') {
+            // Prevent default if it submits form (though we don't have form tag)
+            e.preventDefault();
+            // Only 'save' if not empty? Or add to queue.
+            // If just numbers entered, 'Enter' could act as 'save' (Add/Continuous)
+            handleCalcInput('save');
+        } else if (key === 'Delete') {
+            handleCalcInput('clear');
+        }
+    });
 }
 
 // Data Loading
