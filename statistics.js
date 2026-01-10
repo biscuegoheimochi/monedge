@@ -15,6 +15,7 @@ let assetChart = null;
 let assetGroupBy = 'type';
 let assetDataCache = null;
 let assetCategories = null;
+let assetBreakdownChart = null;
 
 // Helper API
 async function callApi(action, payload = {}) {
@@ -171,6 +172,9 @@ function loadStatistics() {
         .catch(err => {
             alert('通信エラー: ' + err.message);
         });
+
+    // Load Asset Breakdown
+    loadAssetBreakdown();
 }
 
 function renderPieChart(transactions) {

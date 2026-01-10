@@ -164,7 +164,19 @@
                     </div>
                 </div>
             </div>
-            <!-- Future: List of breakdown details could go here -->
+            <!-- Asset Breakdown Chart -->
+            <h3 style="margin: 30px 0 10px; padding-left:10px; border-left:4px solid var(--primary-color);">資産内訳</h3>
+            <div class="chart-container" style="position: relative;">
+                <canvas id="assetBreakdownChart"></canvas>
+                <div id="asset-chart-center-text"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <div style="font-size: 0.8rem; color: var(--text-sub);">資産合計</div>
+                    <div id="asset-breakdown-total"
+                        style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">
+                        ¥0
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Trends View -->
