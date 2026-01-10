@@ -13,6 +13,7 @@ let accounts = [];
 let assetCategories = []; // Loaded from server
 let currentDate = new Date();
 let currentAssetType = 'Asset'; // For modal
+let currentHistoryAccountId = null;
 
 // Helper for API usage (similar to script.js)
 async function callApi(action, payload = {}) {
@@ -119,6 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // History Modal Handlers
+        document.getElementById('close-history-modal').addEventListener('click', () => {
+            document.getElementById('history-modal').classList.add('hidden');
+        });
+
+        document.getElementById('delete-account-btn').addEventListener('click', () => {
+            if (currentHistoryAccountId) handleDeleteAccount(currentHistoryAccountId);
+        });
 
         // Menu Links
         const navStats = document.getElementById('nav-statistics');
@@ -280,8 +289,17 @@ function renderAccounts(accountsList) {
                 </div>
             `;
             // Add listener for single save
-            row.querySelector('.save-single-btn').addEventListener('click', function () {
+            row.querySelector('.save-single-btn').addEventListener('click', function (e) {
+                e.stopPropagation(); // Prevent row click
                 updateSingleAccount(this, this.dataset.id);
+            });
+
+            // Allow input click without triggering row
+            row.querySelector('.balance-input').addEventListener('click', (e) => e.stopPropagation());
+
+            // Row click for history
+            row.addEventListener('click', () => {
+                openHistoryModal(acc);
             });
 
             groupDiv.appendChild(row);
@@ -461,4 +479,131 @@ function renderCategoryPills(type) {
         };
         container.appendChild(pill);
     });
+}
+
+// --- History Logic ---
+
+function openHistoryModal(account) {
+    currentHistoryAccountId = account.id;
+    document.getElementById('history-account-name').textContent = account.name;
+    document.getElementById('history-account-type').textContent = account.type + ' / ' + account.holder;
+
+    document.getElementById('history-modal').classList.remove('hidden');
+    loadAssetHistory(account.id);
+}
+
+function loadAssetHistory(accountId) {
+    const list = document.getElementById('history-list');
+    list.innerHTML = '<div style="text-align:center; padding:20px; color:#888;"><ion-icon name="sync-outline" class="spin"></ion-icon> Loading history...</div>';
+
+    callApi('getAssetHistory', { accountId: accountId })
+        .then(res => {
+            if (res.status === 'success') {
+                renderHistory(res.data);
+            } else {
+                list.innerHTML = '<div style="text-align:center; color:red;">エラー: ' + res.error + '</div>';
+            }
+        })
+        .catch(err => {
+            list.innerHTML = '<div style="text-align:center; color:red;">通信エラー</div>';
+        });
+}
+
+function renderHistory(history) {
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+
+    if (!history || history.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding:20px; color:#888;">履歴がありません</div>';
+        return;
+    }
+
+    history.forEach(rec => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+
+        const dateStr = rec.date; // YYYY-MM-DD
+        const amountStr = Number(rec.amount).toLocaleString();
+
+        item.innerHTML = `
+            <div class="history-info">
+                <div class="history-date">${dateStr}</div>
+                <div class="history-amount">¥${amountStr}</div>
+            </div>
+            <div class="history-actions">
+                <button class="action-btn edit"><ion-icon name="create-outline"></ion-icon></button>
+                <button class="action-btn delete"><ion-icon name="trash-outline"></ion-icon></button>
+            </div>
+        `;
+
+        // Handlers
+        item.querySelector('.edit').addEventListener('click', () => {
+            const newAmount = prompt('金額を修正してください', rec.amount);
+            if (newAmount !== null && newAmount !== '') {
+                // Date editing optional? User might want to edit date.
+                // For now ask simple amount.
+                updateHistoryRecord(rec.id, dateStr, newAmount);
+            }
+        });
+
+        item.querySelector('.delete').addEventListener('click', () => {
+            if (confirm('この履歴を削除しますか？')) {
+                deleteHistoryRecord(rec.id);
+            }
+        });
+
+        list.appendChild(item);
+    });
+}
+
+function updateHistoryRecord(id, date, amount) {
+    callApi('updateAssetHistory', { recordId: id, date: date, amount: amount })
+        .then(res => {
+            if (res.success) {
+                loadAssetHistory(currentHistoryAccountId);
+                // Also reload main accounts to reflect latest balance if changed
+                loadAccounts();
+            } else {
+                alert('更新失敗: ' + res.error);
+            }
+        });
+}
+
+function deleteHistoryRecord(id) {
+    callApi('deleteAssetHistory', { recordId: id })
+        .then(res => {
+            if (res.success) {
+                loadAssetHistory(currentHistoryAccountId);
+                loadAccounts();
+            } else {
+                alert('削除失敗: ' + res.error);
+            }
+        });
+}
+
+function handleDeleteAccount(accountId) {
+    if (confirm('本当にこの口座を削除しますか？\n関連するすべての履歴も削除されます。\nこの操作は取り消せません。')) {
+        const btn = document.getElementById('delete-account-btn');
+        btn.disabled = true;
+        btn.textContent = '削除中...';
+
+        callApi('deleteAssetAccount', { accountId: accountId })
+            .then(res => {
+                btn.disabled = false;
+                btn.innerHTML = '<ion-icon name="trash-outline"></ion-icon> この口座を削除';
+
+                if (res.success) {
+                    document.getElementById('history-modal').classList.add('hidden');
+                    loadAccounts();
+                    alert('口座を削除しました');
+                } else {
+                    alert('削除失敗: ' + res.error);
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = '<ion-icon name="trash-outline"></ion-icon> この口座を削除';
+                alert('通信エラー');
+            });
+    }
 }
