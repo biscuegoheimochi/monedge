@@ -2,12 +2,12 @@
 // -- Archive Logic --
 
 // Configuration
-const API_URL = "https://script.google.com/macros/s/AKfycbx7NUviiiV8PFw2jJoeVHhcikCay2TV_QFcqOxWNKEZPI7el4h1UFySs7gsv46YOgp_SA/exec"; // TO BE REPLACED
+// Configuration (Loaded from config.js)
 
 // Helper API
 async function callApi(action, payload = {}) {
     try {
-        const url = new URL(API_URL);
+        const url = new URL(CONFIG.API_URL);
         url.searchParams.append('action', action);
 
         const body = JSON.stringify({

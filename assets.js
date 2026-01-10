@@ -5,7 +5,8 @@
 
 // Configuration (Must match what is in script.js or be passed in)
 // Ideally, reuse the same configuration method. For now, we define it here too or assume global.
-const API_URL = "https://script.google.com/macros/s/AKfycbz9swpCcYyiAeOUT6uRudRHAoJXaVjf6FwoIRzsfDg644pY84H5Lxmh0RkPdDy89m8JPw/exec"; // TO BE REPLACED
+// Configuration (Loaded from config.js)
+// const API_URL = ... ; // Removed local definition
 
 // State
 let accounts = [];
@@ -16,7 +17,7 @@ let currentAssetType = 'Asset'; // For modal
 // Helper for API usage (similar to script.js)
 async function callApi(action, payload = {}) {
     try {
-        const url = new URL(API_URL);
+        const url = new URL(CONFIG.API_URL);
         url.searchParams.append('action', action);
 
         const body = JSON.stringify({
@@ -461,5 +462,3 @@ function renderCategoryPills(type) {
         container.appendChild(pill);
     });
 }
-
-

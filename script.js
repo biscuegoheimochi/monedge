@@ -1,7 +1,4 @@
-
-// --- Configuration ---
-// TO BE REPLACED WITH YOUR DEPLOYED WEB APP URL
-const API_URL = "https://script.google.com/macros/s/AKfycbz9swpCcYyiAeOUT6uRudRHAoJXaVjf6FwoIRzsfDg644pY84H5Lxmh0RkPdDy89m8JPw/exec"; // Example: "https://script.google.com/macros/s/xxx/exec"
+// API Configuration is now in config.js (CONFIG.API_URL)
 
 /* 
 * Client-Side Logic
@@ -19,7 +16,7 @@ let categories = [];
 let transactions = [];
 
 // Mock Mode Detection (Manual override or fallback if API_URL is invalid)
-const isMock = API_URL === "YOUR_GAS_DEPLOY_URL";
+const isMock = CONFIG.API_URL === "YOUR_GAS_DEPLOY_URL";
 
 // Mock Data
 const MOCK_CATEGORIES = [
@@ -83,7 +80,10 @@ async function callApi(action, payload = {}) {
     }
 
     try {
-        const url = new URL(API_URL);
+        if (typeof CONFIG === 'undefined' || !CONFIG.API_URL) {
+            throw new Error("API URL not configured in config.js");
+        }
+        const url = new URL(CONFIG.API_URL);
         url.searchParams.append('action', action); // pass action in query for GET routing if needed, but mainly we POST
 
         // Construct POST body
@@ -706,5 +706,3 @@ function deleteTransaction() {
             }
         });
 }
-
-
