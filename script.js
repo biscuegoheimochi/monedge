@@ -89,6 +89,7 @@ async function callApi(action, payload = {}) {
         // Construct POST body
         const body = JSON.stringify({
             action: action,
+            password: Auth.getToken(), // Inject Authentication Token
             ...payload
         });
 
@@ -291,6 +292,9 @@ function loadTransactions() {
             })
             .catch(error => {
                 console.error('Failed to fetch transactions:', error);
+                if (error.message.includes("Unauthorized")) {
+                    Auth.logout(); // Reset if unauthorized (token invalid)
+                }
                 document.getElementById('transaction-list').innerHTML = `<div class="error">エラーが発生しました: ${error.message}</div>`;
             });
     }

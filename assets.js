@@ -23,6 +23,7 @@ async function callApi(action, payload = {}) {
 
         const body = JSON.stringify({
             action: action,
+            password: Auth.getToken(),
             ...payload
         });
 
