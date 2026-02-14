@@ -695,7 +695,10 @@ function updateMonthDisplay() {
 }
 
 function formatDate(d) {
-    return d.toISOString().split('T')[0];
+    const y = d.getFullYear();
+    const m = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${day}`;
 }
 
 function getCategoryColor(name) {
